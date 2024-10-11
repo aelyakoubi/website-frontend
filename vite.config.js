@@ -10,13 +10,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     cors: {
-      origin: isProduction ? 'https://www.max-alarmsystems.com' : 'http://localhost:3000',
+      origin: isProduction ? 'https://website-backend-1-n3p3.onrender.com' : 'http://localhost:3000',
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: '*',
     },
     proxy: {
       '/api': {
-        target: isProduction ? 'https://api.max-alarmsystems.com' : 'http://localhost:3000',
+        target: isProduction ? 'https://api.render.com/deploy/srv-cs4kis52ng1s739mt85g?key=2n5SKhcxcQc' : 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // Adjust path if needed
       },
