@@ -4,9 +4,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "start": "vite",
         "build": "NODE_ENV=production vite build",
-        "preview": "vite preview"
+        "start": "vite"
     },
     "dependencies": {
         "@chakra-ui/icons": "^2.1.1",
