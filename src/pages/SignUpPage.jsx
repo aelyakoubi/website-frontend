@@ -67,6 +67,7 @@ const SignUpPage = () => {
               type="text"
               name="name"
                fontWeight="bold"
+               placeholder="Your Name"
               value={formData.name}
               onChange={handleInputChange}
               required
@@ -81,6 +82,7 @@ const SignUpPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
+              placeholder="Your email"
             />
           </FormControl>
           <FormControl id="username" isRequired>
@@ -89,6 +91,7 @@ const SignUpPage = () => {
               type="text"
               name="username"
                fontWeight="bold"
+               placeholder="Your Username"
               value={formData.username}
               onChange={handleInputChange}
               required
@@ -100,6 +103,7 @@ const SignUpPage = () => {
               type={showPassword ? 'text' : 'password'} // Toggle password visibility
               name="password"
                fontWeight="bold"
+               placeholder="Your Password"
               value={formData.password}
               onChange={handleInputChange}
               required
