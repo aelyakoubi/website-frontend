@@ -3,11 +3,10 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "start": "vite",
-        "build": "NODE_ENV=production vite build",
-        "preview": "vite preview"
-    },
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview"
+},
     "dependencies": {
         "@chakra-ui/icons": "^2.1.1",
         "@chakra-ui/react": "^2.7.0",
