@@ -82,7 +82,7 @@ const SignUpPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              placeholder="Your email"
+              placeholder="Your Email"
             />
           </FormControl>
           <FormControl id="username" isRequired>
