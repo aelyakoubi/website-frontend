@@ -29,7 +29,7 @@ export const EventSearch = ({ events, setFilteredEvents }) => {
       placeholder="Search"
       value={searchTerm}
       onChange={handleSearch}
-      width={50}
+      width={[30,30]}
       pl = {30}
       mt={20}
       ml={10}
