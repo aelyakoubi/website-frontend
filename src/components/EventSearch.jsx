@@ -32,7 +32,7 @@ export const EventSearch = ({ events, setFilteredEvents }) => {
       width={50}
       pl = {50}
       mt={20}
-      ml={0}
+      ml={20}
       borderColor={"black"}
       borderStyle={"solid"}
     />
