@@ -167,8 +167,8 @@ export const EventsPage = () => {
           </Stack>
         )}
       </Container>
-      <EventSearch />de
-
+      
+<EventSearch events={events} setFilteredEvents={setFilteredEvents} />
       <AddEvent setFilteredEvents={setFilteredEvents} events={events} categoryIds={[]} userId={userId} />
 
       <Stack
