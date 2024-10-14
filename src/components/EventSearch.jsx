@@ -26,6 +26,7 @@ export const EventSearch = ({ events, setFilteredEvents }) => {
   return (
     <Input
       type="text"
+      textAlign={left}
       placeholder="Search events"
       value={searchTerm}
       onChange={handleSearch}
