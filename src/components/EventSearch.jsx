@@ -26,11 +26,11 @@ export const EventSearch = ({ events, setFilteredEvents }) => {
   return (
     <Input
       type="text"
-      placeholder="Search Events"
+      placeholder="Search    Events"
       value={searchTerm}
       onChange={handleSearch}
-      width={["30%","30%"]}
-      pl = {50}
+      width={["35%","35%"]}
+      pl = {40}
       mt={20}
       ml={10}
       borderColor={"black"}
