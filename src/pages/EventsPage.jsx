@@ -168,9 +168,9 @@ export const EventsPage = () => {
         )}
       </Container>
       
-<EventSearch events={events} setFilteredEvents={setFilteredEvents} />
       <AddEvent setFilteredEvents={setFilteredEvents} events={events} categoryIds={[]} userId={userId} />
-
+<EventSearch events={events} setFilteredEvents={setFilteredEvents} />
+      
       <Stack
         spacing={4}
         flexDir="row"
