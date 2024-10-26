@@ -6,7 +6,7 @@ import { handleSignUp } from '../FrontLogin/AuthUtils'; // Ensure the path to Au
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
-    name: '', 
+    name: '',
     username: '',
     email: '',
     password: '',
@@ -19,6 +19,7 @@ const SignUpPage = () => {
 
   const navigate = useNavigate(); // Initialize navigate hook
 
+  // Function to handle input changes (name, username, email, password)
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -26,102 +27,119 @@ const SignUpPage = () => {
     });
   };
 
+  // Function to handle file input changes (image)
   const handleImageChange = (e) => {
     setFormData({
       ...formData,
       imageFile: e.target.files[0],
     });
   };
+
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage(''); // Reset error message
     setSuccessMessage(''); // Reset success message
-  
+
     const { name, email, username, password, imageFile } = formData;
-  
+
     try {
-      await handleSignUp(name, email, username, password, imageFile);
+      // Call handleSignUp and pass all the form data
+      await handleSignUp(name, email, username, password, imageFile, navigate);
       setSuccessMessage('Sign-up successful! Redirecting...');
-  
-      // Redirect to homepage after successful sign-up
+      
       setTimeout(() => {
         navigate('/'); // Redirect to the homepage after 2 seconds
       }, 2000);
-      
     } catch (error) {
-      // Display specific error messages from the backend
+      console.error("Sign-up error:", error); // Log the error for debugging
       setErrorMessage(error.response?.data?.message || 'Sign-up failed. Please try again.');
     }
   };
-  
 
   return (
     <Box maxW="md" mx="auto" mt={10}>
-      {errorMessage && <Text color="red.500">{errorMessage}</Text>} {/* Display error message */}
-      {successMessage && <Text color="green.500">{successMessage}</Text>} {/* Display success message */}
+      {/* Display error message if exists */}
+      {errorMessage && <Text color="red.500">{errorMessage}</Text>}
+      {/* Display success message if exists */}
+      {successMessage && <Text color="green.500">{successMessage}</Text>}
+
       <form onSubmit={handleSubmit}>
         <VStack spacing={4}>
+          {/* Name input field */}
           <FormControl id="name" isRequired>
             <FormLabel>Name</FormLabel>
             <Input
               type="text"
               name="name"
-               fontWeight="bold"
-               placeholder="Your Name"
+              fontWeight="bold"
               value={formData.name}
               onChange={handleInputChange}
               required
             />
           </FormControl>
+
+          {/* Email input field */}
           <FormControl id="email" isRequired>
             <FormLabel>Email</FormLabel>
             <Input
               type="email"
               name="email"
-               fontWeight="bold"
+              fontWeight="bold"
               value={formData.email}
               onChange={handleInputChange}
               required
-              placeholder="Your Email"
             />
           </FormControl>
+
+          {/* Username input field */}
           <FormControl id="username" isRequired>
             <FormLabel>Username</FormLabel>
             <Input
               type="text"
               name="username"
-               fontWeight="bold"
-               placeholder="Your Username"
+              fontWeight="bold"
               value={formData.username}
               onChange={handleInputChange}
               required
             />
           </FormControl>
+
+          {/* Password input field with toggle visibility */}
           <FormControl id="password" isRequired>
             <FormLabel>Password</FormLabel>
             <Input
-              type={showPassword ? 'text' : 'password'} // Toggle password visibility
+              type={showPassword ? 'text' : 'password'}
               name="password"
-               fontWeight="bold"
-               placeholder="Your Password"
+              fontWeight="bold"
               value={formData.password}
               onChange={handleInputChange}
               required
             />
-            <Button onClick={() => setShowPassword(!showPassword)} variant="link">
+            <Button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              variant="link"
+              color="blue.500"
+              fontSize="sm"
+            >
               {showPassword ? <ViewOffIcon /> : <ViewIcon />}
               {showPassword ? 'Hide password' : 'Show password'}
             </Button>
           </FormControl>
+
+          {/* Image upload field */}
           <FormControl id="image">
             <FormLabel>Upload Image</FormLabel>
             <Input
               type="file"
               accept="image/*"
-               fontWeight="bold"
+              fontWeight="bold"
               onChange={handleImageChange}
             />
           </FormControl>
+
+          {/* Submit button */}
           <Button type="submit" colorScheme="blue" width="full">
             Sign Up
           </Button>

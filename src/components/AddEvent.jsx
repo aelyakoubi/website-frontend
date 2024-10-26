@@ -87,7 +87,7 @@ export const AddEvent = ({ setFilteredEvents, events, userId }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": token, // Include the token in the Authorization header
+          "Authorization": `Bearer ${token}`, // Include the token in the Authorization header
         },
         body: JSON.stringify(newEvent),
       });

@@ -46,7 +46,7 @@ export const EventPage = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": token, // Include the token in the Authorization header
+        Authorization: `Bearer ${token}`, // Include Bearer token in the request headers
       },
       body: JSON.stringify(editedEvent),
     })
@@ -66,7 +66,7 @@ export const EventPage = () => {
       })
       .catch((error) => {
         console.log("Error updating event:", error);
-        alert("Failed to update event!");
+        alert("Failed to update event! You are not authorized to update this event");
       });
   };
 
@@ -76,7 +76,7 @@ export const EventPage = () => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": token, // Include the token in the Authorization header
+        Authorization: `Bearer ${token}`, // Include Bearer token in the request headers
       },
     })
       .then((response) => {
@@ -84,12 +84,12 @@ export const EventPage = () => {
           navigate("/");
           alert("Event deleted successfully!");
         } else {
-          throw new Error("Failed to delete event");
+          throw new Error("Failed to delete event!  You are not authorized to delete this event");
         }
       })
       .catch((error) => {
         console.error("Error deleting event:", error);
-        alert("Failed to delete event!");
+        alert("Failed to delete event!  You are not authorized to delete this event");
       });
   };
 
@@ -112,7 +112,7 @@ export const EventPage = () => {
             objectFit="cover"
           />
         )}
-        
+       
         <form>
           <label>
             Title:

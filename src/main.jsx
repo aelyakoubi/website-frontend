@@ -7,9 +7,10 @@ import { EventPage } from "./pages/EventPage";
 import { EventsPage } from "./pages/EventsPage";
 import { Root } from "./components/Root";
 import LogoutTimer from "./components/LogoutTimer"; // Ensure this path is correct
-import SignUpPage from './pages/SignUpPage'; 
 import ContactPage from './pages/ContactPage';
 import AboutUsPage from './pages/AboutUsPage';
+import UserAccountPage from './pages/UserAccountPage'; // Import the UserAccountPage component
+import SignUpPage from "./pages/SignUpPage";
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/event/:eventId",
         element: <EventPage />,
+      },
+      {
+        path: "/useraccount",  // User account route
+        element: <UserAccountPage />,
       },
     ],
   },

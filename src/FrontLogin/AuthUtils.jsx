@@ -1,61 +1,51 @@
 // frontend/src/FrontLogin/AuthUtils.js
 
-import { useNavigate } from 'react-router-dom';
-
-// Login function modified to accept either email or username as 'identifier'
-export const handleLogin = async (identifier, password, onClose) => {
+export const handleLogin = async (identifier, password, onClose, navigate) => {
   try {
-    console.log("Logging in with identifier:", identifier); // identifier can be either email or username
-    console.log("Logging in with password:", password);
-
-  
-
-
+    console.log("Logging in with identifier:", identifier);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ identifier, password }), // Passing either email or username as identifier
+      body: JSON.stringify({ identifier, password }),
     });
 
     if (response.ok) {
-      const { token } = await response.json(); // Assuming your server returns the token in the response
-
+      const { token } = await response.json();
       if (token) {
-        localStorage.setItem('token', token); // Store token in localStorage
-        onClose(); // Close the modal after successful login
+        localStorage.setItem('token', token);
+        onClose(); // Close the modal on successful login
+        navigate('/'); // Navigate to the homepage or another desired page
       } else {
         throw new Error("Invalid identifier or password");
       }
     } else {
-      throw new Error("Invalid identifier or password");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Invalid identifier or password");
     }
   } catch (error) {
-    console.error("Login failed:", error);
-    // Handle login failure, such as displaying error messages
+    console.error("Login failed:", error.message);
+    alert(error.message); // Replace with better UI feedback mechanism in the future
   }
 };
 
-// Sign-up function now includes name, email, username, and password
+// handleSignUp function
 export const handleSignUp = async (name, email, username, password, imageFile, navigate) => {
   try {
-    console.log("Signing up with name:", name);
-    console.log("Signing up with email:", email);
-    console.log("Signing up with username:", username);
-
+    // Create a FormData object to send both file and text data
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
     formData.append('username', username);
-    formData.append('password', password);
+    formData.append('password', password);  // Ensure password is appended
     if (imageFile) {
-      formData.append('image', imageFile);
+      formData.append('image', imageFile);  // Append the image file if present
     }
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/users/signup`, {
       method: "POST",
-      body: formData,
+      body: formData,  // Send formData, not JSON
     });
 
     if (response.ok) {
@@ -64,10 +54,12 @@ export const handleSignUp = async (name, email, username, password, imageFile, n
       navigate('/'); // Redirect after successful signup
     } else {
       const errorData = await response.json();
-      console.error("Sign-up failed:", errorData.errors || errorData);
+      console.error("Sign-up failed:", errorData);
+      alert(errorData.message || "Sign-up failed. Please try again.");  // Display error message
     }
   } catch (error) {
     console.error("Sign-up error:", error);
+    alert("An error occurred during sign-up. Please try again.");
   }
 };
 
