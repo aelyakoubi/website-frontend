@@ -116,18 +116,9 @@ export const EventsPage = () => {
           overflow='hidden' // Prevent horizontal scrolling
           boxSizing='border-box' // Include padding and border in the element's width
         >
-          <Flex
-            direction='column'
-            align='center'
-            justify='center'
-            minHeight='10vh'
-            width='100%' // Ensure the Flex container takes full width
-            overflow='hidden' // Prevent horizontal scrolling
-            boxSizing='border-box' // Include padding and border in the element's width
-          >
-            {userIsAuthenticated && <Logo />}
-            {userIsAuthenticated && <LogoutButton />}
-          </Flex>
+          {/* Logo and LogoutButton are now directly inside the Container */}
+          {userIsAuthenticated && <Logo />}
+          {userIsAuthenticated && <LogoutButton />}
 
           {/* Render the LoginModal conditionally based on isOpen */}
           <LoginModal isOpen={isOpen} onClose={onClose} />
