@@ -105,12 +105,11 @@ export const EventsPage = () => {
       >
         <Flex
           direction='column'
-          align='flex-end'
-          position='absolute'
-          top='0'
-          right='0'
-          zIndex='3'
-          p='0'
+          align='center'
+          justify='center'
+          minHeight='10vh'
+          mx={['2', '4', '8']} // Responsive margin
+          px={['2', '4', '8']} // Responsive padding
         >
           {userIsAuthenticated && <Logo />}
           {userIsAuthenticated && <LogoutButton />}
