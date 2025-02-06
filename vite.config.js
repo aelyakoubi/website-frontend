@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 4173,
+    port: 5173,
     cors: {
       origin: isProduction
         ? 'https://website-backend-1-n3p3.onrender.com'
