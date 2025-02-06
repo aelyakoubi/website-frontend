@@ -37,8 +37,14 @@ const Navbar = () => {
   }, [onToggle]);
 
   return (
-    <Box bg='gray.900' p={3} w='100vw'>
-      <Flex as='nav' justify='space-between' align='center'>
+    <Box bg='gray.900' p={3} width='100%'>
+      <Flex
+        as='nav'
+        justify='space-between'
+        align='center'
+        maxW='container.xl'
+        mx='auto'
+      >
         {/* Logo or Branding */}
         <Box color='white' fontSize='xl' fontWeight='bold'>
           www.MAX-ONLINESHOP-EVENTS.com

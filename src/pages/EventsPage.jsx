@@ -1,10 +1,4 @@
-import {
-  Button,
-  Container,
-  Flex,
-  Heading,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AddEvent } from '../components/AddEvent';
@@ -91,61 +85,41 @@ export const EventsPage = () => {
   return (
     <>
       <LogoutTimer />
-      <Flex
-        direction='column'
-        w='100vw' // Ensure the Flex container takes up the full viewport width
-        minH='100vh' // Ensure the Flex container takes up the full viewport height
-        align='center'
-        justify='center'
-        overflowX='hidden' // Prevent horizontal scrolling
-        mx='0' // Remove horizontal margin
-        px={['1', '2', '4']} // Reduced responsive padding
-      >
-        <Heading as='h1' textAlign='center' mt='13' fontSize={30}>
-          Welcome to our events page
-        </Heading>
-        <Container
-          maxW='container.xl' // You can adjust this if needed
-          position='relative'
-          mt='4'
-          zIndex='2'
-          bgSize='cover'
-          bgPosition='center'
-          bgRepeat='no-repeat'
-          width='100%' // Ensure the container takes full width
-          overflow='hidden' // Prevent horizontal scrolling
-          boxSizing='border-box' // Include padding and border in the element's width
-        >
-          {/* Logo and LogoutButton are now directly inside the Container */}
-          {userIsAuthenticated && <Logo />}
-          {userIsAuthenticated && <LogoutButton />}
+      <Heading as='h1' textAlign='center' mt='13' fontSize={30}>
+        Welcome to our events page
+      </Heading>
 
-          {/* Render the LoginModal conditionally based on isOpen */}
-          <LoginModal isOpen={isOpen} onClose={onClose} />
+      {/* Logo and LogoutButton */}
+      {userIsAuthenticated && <Logo />}
+      {userIsAuthenticated && <LogoutButton />}
 
-          {/* Button to open the login modal directly */}
-          {!userIsAuthenticated && (
-            <Button onClick={onOpen} mt={4} colorScheme='teal'>
-              Log in
-            </Button>
-          )}
-        </Container>
+      {/* Render the LoginModal conditionally based on isOpen */}
+      <LoginModal isOpen={isOpen} onClose={onClose} />
 
-        <AddEvent
-          setFilteredEvents={setFilteredEvents}
-          events={events}
-          categoryIds={[]}
-          userId={userId}
-        />
-        <EventSearch events={events} setFilteredEvents={setFilteredEvents} />
+      {/* Button to open the login modal directly */}
+      {!userIsAuthenticated && (
+        <Button onClick={onOpen} mt={4} colorScheme='teal'>
+          Log in
+        </Button>
+      )}
 
-        {/* Event List */}
-        <EventList
-          filteredEvents={filteredEvents}
-          handleEventClick={handleEventClick}
-          getCategoryName={getCategoryName}
-        />
-      </Flex>
+      {/* AddEvent Component */}
+      <AddEvent
+        setFilteredEvents={setFilteredEvents}
+        events={events}
+        categoryIds={[]}
+        userId={userId}
+      />
+
+      {/* EventSearch Component */}
+      <EventSearch events={events} setFilteredEvents={setFilteredEvents} />
+
+      {/* EventList Component */}
+      <EventList
+        filteredEvents={filteredEvents}
+        handleEventClick={handleEventClick}
+        getCategoryName={getCategoryName}
+      />
     </>
   );
 };
