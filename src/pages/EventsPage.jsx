@@ -102,6 +102,9 @@ export const EventsPage = () => {
         bgSize='cover'
         bgPosition='center'
         bgRepeat='no-repeat'
+        width='100%' // Ensure the container takes full width
+        overflow='hidden' // Prevent horizontal scrolling
+        boxSizing='border-box' // Include padding and border in the element's width
       >
         <Flex
           direction='column'
@@ -110,6 +113,9 @@ export const EventsPage = () => {
           minHeight='10vh'
           mx={['2', '4', '8']} // Responsive margin
           px={['2', '4', '8']} // Responsive padding
+          width='100%' // Ensure the Flex container takes full width
+          overflow='hidden' // Prevent horizontal scrolling
+          boxSizing='border-box' // Include padding and border in the element's width
         >
           {userIsAuthenticated && <Logo />}
           {userIsAuthenticated && <LogoutButton />}
