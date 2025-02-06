@@ -11,7 +11,7 @@ export default defineConfig({
     port: 4173,
     cors: {
       origin: isProduction
-        ? 'https://website-frontend-8wnm.onrender.com/'
+        ? 'https://website-backend-1-n3p3.onrender.com'
         : 'http://localhost:3000',
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: '*',
@@ -25,6 +25,9 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''), // Adjust path if needed
       },
     },
+  },
+  preview: {
+    allowedHosts: ['website-frontend-8wnm.onrender.com'],
   },
   build: {
     rollupOptions: {
