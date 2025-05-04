@@ -25,18 +25,22 @@ export const EventSearch = ({ events, setFilteredEvents }) => {
 
   return (
     <Input
-      type="text"
-      placeholder="Search events"
+      type='text'
+      placeholder='Search events'
       value={searchTerm}
       onChange={handleSearch}
-      width={["30%", "30%"]}
-      pl = {50}
-      ml={50}
-      mt={10}
-      borderColor={"black"}
-      borderStyle={"solid"}
-     
-      
+      width={['100%', '80%', '60%']} // Responsive width: 100% on mobile, 80% on medium, 60% on large
+      maxWidth='600px' // Optional: sets a maximum width
+      pl={[4, 50]} // Smaller padding on mobile, larger on desktop
+      ml={[2, 50]} // Smaller margin on mobile, larger on desktop
+      mr={[2, 0]} // Add right margin on mobile if needed
+      mt={[4, 10]}
+      borderColor={'black'}
+      borderStyle={'solid'}
+      sx={{
+        boxSizing: 'border-box', // Ensures padding is included in width calculation
+      }}
     />
   );
 };
+
