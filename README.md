@@ -4,9 +4,8 @@
 
 [Visit the App](https://website-frontend-8wnm.onrender.com)
 
-> ⚠️ **Note:** It may take **50 to 160 seconds** for the website to load due to the limitations of a free Render account.
+> ⚠️ **Note:** It may take **50 to 160 seconds** for the **events to be loaded** due to the cold start delay on a free Render account.
 
----
 
 ## 🔐 Test Credentials
 
@@ -90,6 +89,17 @@ Although hosted separately, both are **part of the same project** and communicat
 
 ---
 
+## 🚀 Project Status: Onward & Upward
+
+### 🔧 Current Phase (In Progress):
+
+- Testing suite (Unit, API & Integration)
+- Auth flow (Forgot Password, Secure Token Handling)
+- Technical documentation (Setup Guide, API References)
+
+
+
+
 ![Screenshot 2024-10-13 164227](https://github.com/user-attachments/assets/794893f9-1fd0-4bec-b5b6-62a87bd96619)
 ![Screenshot 2024-10-11 142737](https://github.com/user-attachments/assets/92e87063-25ec-4a90-8eac-289aefc715af)
 ![Screenshot 2024-10-10 203209](https://github.com/user-attachments/assets/5d0d346a-8674-4cbe-8a52-1a2a17cfdbf7)
@@ -103,6 +113,3 @@ Although hosted separately, both are **part of the same project** and communicat
 ![Screenshot 2024-10-11 143335](https://github.com/user-attachments/assets/15e07885-28bd-471f-bf4f-8ba3d4940b97)
 ![Screenshot 2024-10-11 143404](https://github.com/user-attachments/assets/002ac242-83cd-4163-b53e-1772c8a89639)
 ![Screenshot 2024-10-11 143421](https://github.com/user-attachments/assets/1af49b0c-3064-4791-a0d6-60c481022ae0)
-
-
-
