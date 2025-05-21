@@ -1,28 +1,93 @@
-Developement and Production ready: 
+# 🔧 Development & Production-Based Approach
 
-https://website-frontend-8wnm.onrender.com
+## 🌐 Live Demo
 
-It may take up to 50 till 160 seconds for the website to be online due to a free account at Render!
+[Visit the App](https://website-frontend-8wnm.onrender.com)
 
-Het kan tot 50 tot 160 seconden duren voordat de website online is i.v.m. een gratis account!
+> ⚠️ **Note:** It may take **50 to 160 seconds** for the website to load due to the limitations of a free Render account.
 
-If you want to test, log in: 
+---
 
-Username: Wimpie Blok
+## 🔐 Test Credentials
 
-Password: Wimpie1234
+To test the application, log in using:
 
-Note: Do NOT press on delete the account otherwise you need another  username and password. 
+- **Username:** `Wimpie Blok`  
+- **Password:** `Wimpie1234`
 
-You can find other usernames and passwords in my github account under website-backend/src/data/users.json.
+> ⚠️ **Important:** Do **NOT** click the “Delete” button on the user account page. If you do, you’ll need a new test account.
 
-Due it is connected to Render.com and my MySql server.
+- You can find alternative credentials in this GitHub file:  
+  `/website-backend/src/data/users.json`
+- Or simply create a new account via the **signup page**.
 
----------------------------------
-npm run dev, 
-npm run start
+---
 
-It automaticly connects to development
-mode or production mode if you choose 
-npm run start. This is because i used
-meta.env in all the Urls. 
+## 🛠️ Local Setup Instructions
+
+### Step 1: Frontend (Terminal 1)
+
+```bash
+npm install
+npm audit fix       # Optional, if needed
+npm run start       # Starts on port 5173
+```
+
+### Step 2: Backend (Terminal 2)
+
+```bash
+npm install
+npm audit fix       # Optional, if needed
+npm run start       # Starts on port 3000
+```
+
+### Step 3: MySQL Database (Terminal 3)
+
+```bash
+npx prisma studio
+```
+
+---
+
+## 🌍 API Routing Note
+
+To simplify development and deployment, **absolute URLs** are used when making API requests:
+
+```js
+fetch(`${import.meta.env.VITE_API_URL}/events/${eventId}`)
+```
+
+### 📌 Why this approach?
+
+Using a full base URL via `import.meta.env.VITE_API_URL` avoids the need to switch between relative paths (like `/api/...`) in development vs. production. This ensures consistency and reduces manual adjustments across environments.
+
+- ✅ Works seamlessly with environment variables (e.g., `.env.local`, `.env.production`)
+- ✅ Prevents CORS issues when frontend and backend are hosted on different domains
+- ✅ Suitable for both **local development** and **split deployment** (e.g., Render)
+
+> ℹ️ `VITE_API_URL` is defined in your `.env` file and points to the backend’s base URL (e.g., `http://localhost:3000` for local or your Render backend URL in production).
+
+---
+
+## 🔗 Project Context: Render-Based Split Deployment
+
+This project was originally developed as a **monorepo fullstack application** (frontend + backend in one).
+
+> ⚠️ **However, due to Render’s free-tier limitations**, the project has been split into two public repositories for deployment:
+- `website-frontend`
+- `website-backend`
+
+Although hosted separately, both are **part of the same project** and communicate via API endpoints. The frontend uses the backend through a base URL defined in environment variables.
+
+> 🧩 In a professional setup (like Vercel, AWS, or Docker), the app can run as a single fullstack application again.
+
+---
+
+## 🧪 Testing Notes
+
+- The `.env` file is included for testing purposes.
+- Integration and unit tests are **still being updated** due to recent project changes.
+
+---
+
+
