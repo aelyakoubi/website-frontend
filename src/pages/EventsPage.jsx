@@ -1,9 +1,10 @@
 import { Button, Heading, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AddEvent } from '../components/AddEvent';
 import { EventList } from '../components/EventList'; // Import EventList
 import { EventSearch } from '../components/EventSearch';
+import { Hero } from '../components/Hero'; // Import Hero component
 import { LoginModal } from '../components/LoginModal'; // Import LoginModal
 import LogoutButton from '../components/LogoutButton';
 import LogoutTimer from '../components/LogoutTimer';
@@ -16,6 +17,7 @@ export const EventsPage = () => {
   const [categories, setCategories] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState(null); // <-- Heading state for active category for Hero.jsx
 
   useEffect(() => {
     fetchEvents();
@@ -84,25 +86,51 @@ export const EventsPage = () => {
 
   return (
     <>
+      {
+        /* Only show the Hero component once both events and categories are loaded */
+        events.length > 0 && categories.length > 0 && (
+          <Hero
+            categories={categories} // Pass the list of categories from state to Hero
+            // Function to run when a category block is clicked in Hero
+            onCategoryClick={(categoryId) => {
+              setActiveCategory(categoryId); // Save the clicked category ID to highlight it
+
+              // Find the full category object by ID from the categories array
+              const category = categories.find(
+                (cat) => String(cat.id) === String(categoryId)
+              );
+              if (!category) return; // Safety check: stop if category not found
+
+              // Filter events that belong to the clicked category
+              const filtered = events.filter((event) =>
+                event.categories?.some(
+                  (cat) => String(cat.id) === String(category.id)
+                )
+              );
+
+              setFilteredEvents(filtered); // Update the filtered events to display in EventList
+            }}
+            activeCategory={activeCategory} // Pass the active category ID to Hero for styling (e.g., highlight)
+          />
+        )
+      }
+
       <LogoutTimer />
       <Heading as='h1' textAlign='center' mt='13' fontSize={30}>
-        Welcome to our events page
+        Discover and Explore Events Near You!
       </Heading>
 
       {/* Logo and LogoutButton */}
       {userIsAuthenticated && <Logo />}
       {userIsAuthenticated && <LogoutButton />}
-
       {/* Render the LoginModal conditionally based on isOpen */}
       <LoginModal isOpen={isOpen} onClose={onClose} />
-
       {/* Button to open the login modal directly */}
       {!userIsAuthenticated && (
         <Button onClick={onOpen} mt={4} colorScheme='teal'>
           Log in
         </Button>
       )}
-
       {/* AddEvent Component */}
       <AddEvent
         setFilteredEvents={setFilteredEvents}
@@ -110,10 +138,8 @@ export const EventsPage = () => {
         categoryIds={[]}
         userId={userId}
       />
-
       {/* EventSearch Component */}
       <EventSearch events={events} setFilteredEvents={setFilteredEvents} />
-
       {/* EventList Component */}
       <EventList
         filteredEvents={filteredEvents}

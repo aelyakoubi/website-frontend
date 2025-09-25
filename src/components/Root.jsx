@@ -34,7 +34,9 @@ export const Root = () => {
         fontStyle='bold'
         px={[4, 6, 8]} // Responsive padding
       >
-        <Outlet /> {/* EventsPage.jsx renders here */}
+        <Outlet />{' '}
+        {/* EventsPage.jsx renders here, Children of this route
+        get injected here*/}
       </Box>
 
       {/* Footer */}
