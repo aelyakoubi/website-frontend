@@ -61,7 +61,7 @@ export const Hero = ({ categories = [], onCategoryClick, activeCategory }) => {
       bgImage="url('/images/hero.jpg')" // Local background image
       bgSize='cover'
       bgPos='center'
-      h={['50vh', '60vh']} // Responsive height
+      h={['80vh', '70vh']} // Responsive height
       color='white'
       display='flex'
       flexDirection='column'
@@ -69,6 +69,7 @@ export const Hero = ({ categories = [], onCategoryClick, activeCategory }) => {
       alignItems='center'
       textAlign='center'
       px={4}
+      mb={[8, 12]}
       // Fade-in effect
       opacity={fadeIn ? 1 : 0}
       transition='opacity 1.2s ease-in-out'
@@ -80,7 +81,7 @@ export const Hero = ({ categories = [], onCategoryClick, activeCategory }) => {
         left={0}
         w='100%'
         h='100%'
-        bg='rgba(0,0,0,0.3)' // semi-transparent black
+        bg='rgba(0,0,0,0.45)' // semi-transparent black
         zIndex={0} // background layer
       />
 
