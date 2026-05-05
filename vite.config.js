@@ -1,44 +1,50 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-// Check if the app is running in production
-const isProduction = process.env.NODE_ENV === 'production';
-
 export default defineConfig({
+  // Laad de React plugin zodat Vite JSX bestanden begrijpt
   plugins: [react()],
+
+  // Server instellingen — alleen actief tijdens 'npm run dev' (lokaal)
   server: {
-    host: '0.0.0.0',
-    port: 5173,
+    host: '0.0.0.0', // Toegankelijk op je hele netwerk, niet alleen localhost
+    port: 5173, // Lokale poort voor de frontend
     cors: {
-      origin: isProduction
-        ? 'https://website-backend-1-n3p3.onrender.com'
-        : 'http://localhost:3000',
+      // Sta requests toe vanuit je lokale backend
+      origin: 'http://localhost:3000',
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: '*',
     },
     proxy: {
+      // Alle /api requests worden doorgestuurd naar je lokale backend
+      // Zodat je geen CORS problemen hebt tijdens development
       '/api': {
-        target: isProduction
-          ? 'https://mintcream-aardvark-942303.hostingersite.com'
-          : 'http://localhost:3000',
+        target: 'http://localhost:3000', // Je lokale backend adres
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Adjust path if needed
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
+
+  // Preview instellingen — actief tijdens 'npm run start' (vite preview)
+  // Dit simuleert productie lokaal
   preview: {
-    allowedHosts: ['ivory-dugong-883765.hostingersite.com'],
+    allowedHosts: [
+      'ivory-dugong-883765.hostingersite.com', // Frontend op Hostinger
+      'mintcream-aardvark-942303.hostingersite.com', // Backend op Hostinger
+    ],
   },
+
+  // Build instellingen — actief tijdens 'npm run build'
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
-          // Customize chunk splitting if needed
+          // Splits React in een aparte chunk voor betere laadtijd
           vendor: ['react', 'react-dom'],
         },
       },
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 600, // Waarschuwing als een chunk groter is dan 600kb
   },
-  // No need to define process.env.NODE_ENV, use import.meta.env
 });
