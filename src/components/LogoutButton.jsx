@@ -1,19 +1,22 @@
 // LogoutButton.jsx
-import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 
 const LogoutButton = () => {
-  const navigate = useNavigate();
+  const { logout } = useAuth0();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user'); // Clear userId from localStorage as well
-    navigate('/'); // Redirect to the home page or login page
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (
-    <Button onClick={handleLogout} colorScheme="red" position="absolute" top="20" right="20">
+    <Button
+      onClick={handleLogout}
+      colorScheme='red'
+      position='absolute'
+      top='20'
+      right='20'
+    >
       Logout
     </Button>
   );

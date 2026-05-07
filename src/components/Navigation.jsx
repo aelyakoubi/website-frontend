@@ -1,6 +1,8 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -9,7 +11,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -107,49 +109,76 @@ const Navbar = () => {
 };
 
 // Navigation Links Component
-const NavLinks = () => (
-  <>
-    <Link
-      as={RouterLink}
-      to='/'
-      color='white'
-      _hover={{ textDecoration: 'underline' }}
-    >
-      Home
-    </Link>
-    <Link
-      as={RouterLink}
-      to='/about'
-      color='white'
-      _hover={{ textDecoration: 'underline' }}
-    >
-      About Us
-    </Link>
-    <Link
-      as={RouterLink}
-      to='/contact'
-      color='white'
-      _hover={{ textDecoration: 'underline' }}
-    >
-      Contact
-    </Link>
-    <Link
-      as={RouterLink}
-      to='/signup'
-      color='white'
-      _hover={{ textDecoration: 'underline' }}
-    >
-      Sign Up
-    </Link>
-    <Link
-      as={RouterLink}
-      to='/useraccount'
-      color='white'
-      _hover={{ textDecoration: 'underline' }}
-    >
-      <FaUserCircle size='24px' />
-    </Link>
-  </>
-);
+const NavLinks = () => {
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
+  return (
+    <>
+      <Link
+        as={RouterLink}
+        to='/'
+        color='white'
+        _hover={{ textDecoration: 'underline' }}
+      >
+        Home
+      </Link>
+      <Link
+        as={RouterLink}
+        to='/about'
+        color='white'
+        _hover={{ textDecoration: 'underline' }}
+      >
+        About Us
+      </Link>
+      <Link
+        as={RouterLink}
+        to='/contact'
+        color='white'
+        _hover={{ textDecoration: 'underline' }}
+      >
+        Contact
+      </Link>
+      {isAuthenticated ? (
+        <>
+          <Link
+            as={RouterLink}
+            to='/useraccount'
+            color='white'
+            _hover={{ textDecoration: 'underline' }}
+          >
+            <FaUserCircle size='24px' />
+          </Link>
+          <Button
+            color='white'
+            variant='link'
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+          >
+            Logout
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            color='white'
+            variant='link'
+            onClick={() => loginWithRedirect()}
+          >
+            Login
+          </Button>
+          <Link
+            as={RouterLink}
+            to='/signup'
+            color='white'
+            _hover={{ textDecoration: 'underline' }}
+          >
+            Sign Up
+          </Link>
+        </>
+      )}
+    </>
+  );
+};
 
 export default Navbar;

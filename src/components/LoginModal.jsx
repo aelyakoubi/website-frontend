@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   Box,
   Button,
@@ -19,19 +20,27 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { handleLogin } from '../FrontLogin/AuthUtils';
+import { Link as RouterLink } from 'react-router-dom';
 import { OAuthButtonGroup } from '../FrontLogin/OAuthButtonGroup';
 import { PasswordField } from '../FrontLogin/PasswordField';
 
 export const LoginModal = ({ isOpen, onClose }) => {
+  const { loginWithRedirect } = useAuth0();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleLoginClick = async () => {
-    await handleLogin(identifier, password, onClose, navigate, setError);
+    try {
+      await loginWithRedirect({
+        authorizationParams: {
+          login_hint: identifier, // Pre-fill username/email
+        },
+      });
+      onClose();
+    } catch (error) {
+      setError('Login failed. Please try again.');
+    }
   };
 
   return (
