@@ -38,7 +38,7 @@ const UserAccountPage = () => {
     setSuccessMessage('');
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/account`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ const UserAccountPage = () => {
     setErrorMessage('');
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/account`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
