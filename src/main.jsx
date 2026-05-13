@@ -58,7 +58,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: `${window.location.origin}/callback`,
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
       }}
     >
       <ChakraProvider>
