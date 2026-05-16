@@ -1,4 +1,3 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import {
   Box,
   Button,
@@ -20,27 +19,41 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { handleLogin } from '../FrontLogin/AuthUtils';
 import { OAuthButtonGroup } from '../FrontLogin/OAuthButtonGroup';
 import { PasswordField } from '../FrontLogin/PasswordField';
 
 export const LoginModal = ({ isOpen, onClose }) => {
-  const { loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLoginClick = async () => {
-    try {
-      await loginWithRedirect({
-        authorizationParams: {
-          login_hint: identifier, // Pre-fill username/email
-        },
-      });
-      onClose();
-    } catch (error) {
-      setError('Login failed. Please try again.');
+    if (!identifier || !password) {
+      setError('Vul een gebruikersnaam/e-mail en wachtwoord in.');
+      return;
     }
+
+    setError('');
+    setIsLoading(true);
+
+    try {
+      // Roept de eigen backend aan via POST /login
+      // AuthUtils.handleLogin slaat token op in localStorage en navigeert
+      await handleLogin(identifier, password, onClose, navigate);
+    } catch (err) {
+      setError('Inloggen mislukt. Controleer je gegevens en probeer opnieuw.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Verstuur formulier ook via Enter-toets
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleLoginClick();
   };
 
   return (
@@ -57,8 +70,8 @@ export const LoginModal = ({ isOpen, onClose }) => {
               </Text>
             )}
             <Text color='black.900' textAlign='center' fontSize={17}>
-              Don't have an account?{' '}
-              <Link as={RouterLink} to='/signup'>
+              Don&apos;t have an account?{' '}
+              <Link as={RouterLink} to='/signup' onClick={onClose}>
                 Sign up
               </Link>
             </Text>
@@ -81,12 +94,14 @@ export const LoginModal = ({ isOpen, onClose }) => {
                       type='text'
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
+                      onKeyDown={handleKeyDown}
                     />
                   </FormControl>
                   <PasswordField
                     id='password'
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
                 </Stack>
                 <HStack justify='space-between'>
@@ -96,7 +111,13 @@ export const LoginModal = ({ isOpen, onClose }) => {
                   </Button>
                 </HStack>
                 <Stack spacing='6'>
-                  <Button onClick={handleLoginClick}>Log in</Button>
+                  <Button
+                    onClick={handleLoginClick}
+                    isLoading={isLoading}
+                    loadingText='Inloggen...'
+                  >
+                    Log in
+                  </Button>
                   <HStack>
                     <Divider />
                     <Text textStyle='sm' whiteSpace='nowrap' color='gray.500'>
@@ -104,20 +125,14 @@ export const LoginModal = ({ isOpen, onClose }) => {
                     </Text>
                     <Divider />
                   </HStack>
+                  {/* Auth0 OAuth knoppen (Google, GitHub, etc.) */}
                   <OAuthButtonGroup />
                 </Stack>
               </Stack>
             </Box>
           </Stack>
         </ModalBody>
-        <ModalFooter>
-          {/* <Text color='black.900' textAlign='center' fontSize={17}>
-            Don't have an account?{' '}
-            <Link as={RouterLink} to='/signup'>
-              Sign up
-            </Link>
-          </Text>*/}
-        </ModalFooter>
+        <ModalFooter />
       </ModalContent>
     </Modal>
   );
