@@ -8,12 +8,25 @@ import {
   HStack,
   IconButton,
   Link,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Text,
   VStack,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import {
+  FaSignInAlt,
+  FaTrashAlt,
+  FaUserCircle,
+  FaUserEdit,
+  FaUserPlus,
+} from 'react-icons/fa';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const MotionBox = motion(Box);
@@ -33,7 +46,15 @@ const Navigation = () => {
   }, [onClose]);
 
   return (
-    <Box bg='gray.900' p={3} width='100%' boxShadow='md'>
+    <Box
+      bg='gray.900'
+      p={3}
+      width='100%'
+      boxShadow='md'
+      position='sticky'
+      top={0}
+      zIndex={1000}
+    >
       <Flex
         as='nav'
         justify='space-between'
@@ -110,12 +131,15 @@ const NavLinks = ({ onMobileClick }) => {
     logout: auth0Logout,
     user,
     isLoading: auth0Loading,
+    loginWithRedirect,
   } = useAuth0();
   const navigate = useNavigate();
+  const toast = useToast();
 
   // Check localStorage token for regular login users
   const [hasLocalToken, setHasLocalToken] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [userName, setUserName] = useState('');
 
   // Check token on mount and when storage changes
   useEffect(() => {
@@ -123,26 +147,35 @@ const NavLinks = ({ onMobileClick }) => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
       setHasLocalToken(!!token);
+
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUserName(parsedUser.username || parsedUser.email || 'User');
+        } catch (e) {
+          setUserName('User');
+        }
+      } else if (user) {
+        setUserName(user.nickname || user.name || user.email || 'User');
+      }
+
       setIsCheckingAuth(false);
 
-      // Debug logging
-      console.log('Token check:', {
+      console.log('Auth state:', {
         hasToken: !!token,
-        hasUserData: !!userData,
         auth0Authenticated: isAuth0Authenticated,
+        isLoggedIn: isAuth0Authenticated || !!token,
       });
     };
 
     checkToken();
 
-    // Listen for storage changes (login/logout in other tabs)
     const handleStorage = () => {
       checkToken();
     };
 
     window.addEventListener('storage', handleStorage);
 
-    // Custom event for login/logout within the same tab
     const handleAuthChange = () => {
       checkToken();
     };
@@ -153,14 +186,12 @@ const NavLinks = ({ onMobileClick }) => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('auth-change', handleAuthChange);
     };
-  }, [isAuth0Authenticated]);
+  }, [isAuth0Authenticated, user]);
 
-  // User is logged in if Auth0 session is active OR localStorage token exists
   const isLoggedIn = isAuth0Authenticated || hasLocalToken;
 
-  // Don't render until we've checked authentication
   if (auth0Loading || isCheckingAuth) {
-    return null; // Or return a loading spinner
+    return null;
   }
 
   const handleLogout = () => {
@@ -172,6 +203,14 @@ const NavLinks = ({ onMobileClick }) => {
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent('auth-change'));
 
+    toast({
+      title: 'Logged out',
+      description: 'You have been successfully logged out.',
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    });
+
     // If Auth0 session is active, logout from there too
     if (isAuth0Authenticated) {
       auth0Logout({
@@ -181,6 +220,61 @@ const NavLinks = ({ onMobileClick }) => {
       });
     } else {
       navigate('/');
+    }
+  };
+
+  const handleAccountClick = () => {
+    if (isLoggedIn) {
+      navigate('/useraccount');
+    } else {
+      // Show message that user needs to login
+      toast({
+        title: 'Login Required',
+        description: 'Please login to access your account settings.',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+
+      // Dispatch event to open login modal
+      window.dispatchEvent(new CustomEvent('open-login-modal'));
+    }
+  };
+
+  const handleUpdateAccount = () => {
+    if (isLoggedIn) {
+      navigate('/useraccount');
+    } else {
+      toast({
+        title: 'Login Required',
+        description: 'Please login to update your account.',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+      window.dispatchEvent(new CustomEvent('open-login-modal'));
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (isLoggedIn) {
+      navigate('/useraccount');
+      // Scroll to delete section after navigation
+      setTimeout(() => {
+        const deleteSection = document.getElementById('delete-account-section');
+        if (deleteSection) {
+          deleteSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      toast({
+        title: 'Login Required',
+        description: 'Please login to delete your account.',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+      window.dispatchEvent(new CustomEvent('open-login-modal'));
     }
   };
 
@@ -196,6 +290,7 @@ const NavLinks = ({ onMobileClick }) => {
         as={RouterLink}
         to='/'
         color='white'
+        fontWeight='medium'
         _hover={{ textDecoration: 'underline', color: 'teal.200' }}
         onClick={handleLinkClick}
       >
@@ -206,6 +301,7 @@ const NavLinks = ({ onMobileClick }) => {
         as={RouterLink}
         to='/about'
         color='white'
+        fontWeight='medium'
         _hover={{ textDecoration: 'underline', color: 'teal.200' }}
         onClick={handleLinkClick}
       >
@@ -216,63 +312,89 @@ const NavLinks = ({ onMobileClick }) => {
         as={RouterLink}
         to='/contact'
         color='white'
+        fontWeight='medium'
         _hover={{ textDecoration: 'underline', color: 'teal.200' }}
         onClick={handleLinkClick}
       >
         Contact
       </Link>
 
-      {isLoggedIn ? (
-        <>
-          <Link
-            as={RouterLink}
-            to='/useraccount'
-            color='white'
-            _hover={{ textDecoration: 'underline', color: 'teal.200' }}
-            display='flex'
-            alignItems='center'
-            title='My Account'
-            onClick={handleLinkClick}
-          >
-            <FaUserCircle size='24px' />
-          </Link>
+      {/* Account Menu - ALWAYS VISIBLE */}
+      <Menu>
+        <MenuButton
+          as={Button}
+          leftIcon={<FaUserCircle size='20px' />}
+          colorScheme='teal'
+          variant={isLoggedIn ? 'solid' : 'outline'}
+          size='md'
+          bg={isLoggedIn ? 'teal.500' : 'transparent'}
+          _hover={{ bg: isLoggedIn ? 'teal.600' : 'gray.700' }}
+          _active={{ bg: isLoggedIn ? 'teal.700' : 'gray.600' }}
+        >
+          {isLoggedIn ? userName || 'My Account' : 'Account'}
+        </MenuButton>
 
-          <Button
-            color='white'
-            variant='link'
-            onClick={handleLogout}
-            _hover={{ textDecoration: 'underline', color: 'teal.200' }}
-          >
-            Logout
-          </Button>
-        </>
-      ) : (
-        <>
-          <Link
-            as={RouterLink}
-            to='/'
-            color='white'
-            _hover={{ textDecoration: 'underline', color: 'teal.200' }}
-            onClick={(e) => {
-              handleLinkClick();
-              e.preventDefault();
-              window.dispatchEvent(new CustomEvent('open-login-modal'));
-            }}
-          >
-            Login
-          </Link>
-
-          <Link
-            as={RouterLink}
-            to='/signup'
-            color='white'
-            _hover={{ textDecoration: 'underline', color: 'teal.200' }}
-            onClick={handleLinkClick}
-          >
-            Sign Up
-          </Link>
-        </>
-      )}
+        <MenuList bg='gray.800' borderColor='gray.700'>
+          {isLoggedIn ? (
+            <>
+              <MenuItem
+                icon={<FaUserEdit />}
+                bg='gray.800'
+                color='white'
+                _hover={{ bg: 'gray.700' }}
+                onClick={handleUpdateAccount}
+              >
+                <Text>Update Account Details</Text>
+              </MenuItem>
+              <MenuDivider borderColor='gray.700' />
+              <MenuItem
+                icon={<FaTrashAlt />}
+                bg='gray.800'
+                color='red.400'
+                _hover={{ bg: 'gray.700', color: 'red.300' }}
+                onClick={handleDeleteAccount}
+              >
+                <Text>Delete Account</Text>
+              </MenuItem>
+              <MenuDivider borderColor='gray.700' />
+              <MenuItem
+                onClick={handleLogout}
+                bg='gray.800'
+                color='white'
+                _hover={{ bg: 'gray.700' }}
+              >
+                Logout
+              </MenuItem>
+            </>
+          ) : (
+            <>
+              <MenuItem
+                icon={<FaSignInAlt />}
+                bg='gray.800'
+                color='white'
+                _hover={{ bg: 'gray.700' }}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-login-modal'));
+                }}
+              >
+                <Text>Login to Your Account</Text>
+              </MenuItem>
+              <MenuDivider borderColor='gray.700' />
+              <MenuItem
+                icon={<FaUserPlus />}
+                bg='gray.800'
+                color='white'
+                _hover={{ bg: 'gray.700' }}
+                as={RouterLink}
+                to='/signup'
+                onClick={handleLinkClick}
+              >
+                <Text>Create New Account</Text>
+              </MenuItem>
+            </>
+          )}
+        </MenuList>
+      </Menu>
     </>
   );
 };
