@@ -1,58 +1,53 @@
-// LogoutTimer.jsx
+// src/components/LogoutTimer.jsx
+//
+// Logt de gebruiker automatisch uit na 15 minuten inactiviteit.
+// Werkt voor zowel Auth0 gebruikers als normale login gebruikers (localStorage token).
 
 import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const TIMEOUT_MS = 15 * 60 * 1000; // 15 minuten
 
 const LogoutTimer = () => {
-  const { logout, isAuthenticated } = useAuth0();
-  let logoutTimer;
+  const { isAuthenticated: isAuth0Authenticated, logout: auth0Logout } = useAuth0();
+  const navigate = useNavigate();
+  const timerRef = useRef(null);
 
-  const logoutUser = () => {
-    if (isAuthenticated) {
-      logout({ logoutParams: { returnTo: window.location.origin } });
+  const hasLocalToken = () => !!localStorage.getItem('token');
+  const isLoggedIn = isAuth0Authenticated || hasLocalToken();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    if (isAuth0Authenticated) {
+      auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+    } else {
+      navigate('/');
     }
   };
 
-  const startLogoutTimer = () => {
-    console.log('Starting logout timer');
-    logoutTimer = setTimeout(
-      () => {
-        console.log('Logging out user due to inactivity');
-        logoutUser();
-      },
-      15 * 60 * 1000
-    ); // 15 minutes in milliseconds
-  };
-
-  const resetLogoutTimer = () => {
-    console.log('Resetting logout timer');
-    clearTimeout(logoutTimer);
-    startLogoutTimer();
+  const resetTimer = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(handleLogout, TIMEOUT_MS);
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      startLogoutTimer();
+    if (!isLoggedIn) return;
 
-      // Reset timer on user activity
-      const resetTimerOnActivity = () => {
-        resetLogoutTimer();
-      };
+    resetTimer();
 
-      document.addEventListener('click', resetTimerOnActivity);
-      document.addEventListener('mousemove', resetTimerOnActivity);
-      document.addEventListener('keypress', resetTimerOnActivity);
+    const events = ['click', 'mousemove', 'keypress'];
+    events.forEach((e) => document.addEventListener(e, resetTimer));
 
-      return () => {
-        // Clean up event listeners
-        document.removeEventListener('click', resetTimerOnActivity);
-        document.removeEventListener('mousemove', resetTimerOnActivity);
-        document.removeEventListener('keypress', resetTimerOnActivity);
-      };
-    }
-  }, [isAuthenticated]);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      events.forEach((e) => document.removeEventListener(e, resetTimer));
+    };
+  }, [isAuth0Authenticated]);
 
-  return null; // Since this component doesn't render anything, return null
+  return null;
 };
 
 export default LogoutTimer;

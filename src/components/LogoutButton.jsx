@@ -1,12 +1,24 @@
-// LogoutButton.jsx
+// src/components/LogoutButton.jsx
+
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const LogoutButton = () => {
-  const { logout } = useAuth0();
+  const { isAuthenticated: isAuth0Authenticated, logout: auth0Logout } = useAuth0();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout({ logoutParams: { returnTo: window.location.origin } });
+    // Verwijder eigen JWT altijd
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    // Als ook Auth0 sessie actief is, ook daar uitloggen
+    if (isAuth0Authenticated) {
+      auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+    } else {
+      navigate('/');
+    }
   };
 
   return (

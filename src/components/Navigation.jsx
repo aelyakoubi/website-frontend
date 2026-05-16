@@ -11,9 +11,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const MotionBox = motion(Box);
 
@@ -21,21 +21,14 @@ const Navbar = () => {
   const { isOpen, onToggle } = useDisclosure();
   const menuRef = useRef();
 
-  // Close the menu if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        onToggle(); // Close the menu when clicking outside
+        onToggle();
       }
     };
-
-    // Add the event listener
     document.addEventListener('mousedown', handleClickOutside);
-
-    // Clean up the event listener on component unmount
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onToggle]);
 
   return (
@@ -47,17 +40,14 @@ const Navbar = () => {
         maxW='container.xl'
         mx='auto'
       >
-        {/* Logo or Branding */}
         <Box color='white' fontSize='xl' fontWeight='bold'>
           www.MAX-ONLINESHOP-EVENTS.com
         </Box>
 
-        {/* Desktop Menu */}
         <HStack spacing={6} display={{ base: 'none', md: 'flex' }}>
           <NavLinks />
         </HStack>
 
-        {/* Mobile Menu Button */}
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
@@ -68,7 +58,6 @@ const Navbar = () => {
           aria-label='Toggle menu'
         />
 
-        {/* Mobile Menu */}
         {isOpen && (
           <MotionBox
             ref={menuRef}
@@ -86,7 +75,6 @@ const Navbar = () => {
             p={6}
             zIndex={20}
           >
-            {/* Close Button inside the mobile menu */}
             <IconButton
               icon={<CloseIcon />}
               onClick={onToggle}
@@ -108,9 +96,40 @@ const Navbar = () => {
   );
 };
 
-// Navigation Links Component
 const NavLinks = () => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated: isAuth0Authenticated, logout: auth0Logout } = useAuth0();
+  const navigate = useNavigate();
+
+  // Check localStorage token voor normale login gebruikers
+  const [hasLocalToken, setHasLocalToken] = useState(
+    () => !!localStorage.getItem('token')
+  );
+
+  // Luister naar storage wijzigingen (login/logout in andere tab)
+  useEffect(() => {
+    const handleStorage = () => {
+      setHasLocalToken(!!localStorage.getItem('token'));
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  // Gebruiker is ingelogd als Auth0 sessie actief is OF localStorage token aanwezig is
+  const isLoggedIn = isAuth0Authenticated || hasLocalToken;
+
+  const handleLogout = () => {
+    // Verwijder eigen JWT altijd
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setHasLocalToken(false);
+
+    // Als ook Auth0 sessie actief is, ook daar uitloggen
+    if (isAuth0Authenticated) {
+      auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <>
@@ -138,7 +157,7 @@ const NavLinks = () => {
       >
         Contact
       </Link>
-      {isAuthenticated ? (
+      {isLoggedIn ? (
         <>
           <Link
             as={RouterLink}
@@ -148,25 +167,22 @@ const NavLinks = () => {
           >
             <FaUserCircle size='24px' />
           </Link>
-          <Button
-            color='white'
-            variant='link'
-            onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
-            }
-          >
+          <Button color='white' variant='link' onClick={handleLogout}>
             Logout
           </Button>
         </>
       ) : (
         <>
-          <Button
+          {/* Login knop opent de LoginModal via de useDisclosure in Root/Navigation */}
+          <Link
+            as={RouterLink}
+            to='/'
             color='white'
-            variant='link'
-            onClick={() => loginWithRedirect()}
+            _hover={{ textDecoration: 'underline' }}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-login-modal'))}
           >
             Login
-          </Button>
+          </Link>
           <Link
             as={RouterLink}
             to='/signup'
