@@ -23,6 +23,10 @@ export const handleLogin = async (identifier, password, onClose, navigate) => {
   localStorage.setItem('token', token);
   if (user) localStorage.setItem('user', JSON.stringify(user));
 
+  // 🔥 Dispatch custom event to notify Navigation component
+  window.dispatchEvent(new CustomEvent('auth-change'));
+  console.log('✅ Login successful - auth-change event dispatched');
+
   onClose();
   navigate('/');
 };
@@ -63,9 +67,27 @@ export const handleSignUp = async (
     localStorage.setItem('user', JSON.stringify(data.user));
   }
 
+  // 🔥 Dispatch custom event to notify Navigation component
+  window.dispatchEvent(new CustomEvent('auth-change'));
+  console.log('✅ Signup successful - auth-change event dispatched');
+
   navigate('/');
 };
 
 export const isAuthenticated = () => {
   return !!localStorage.getItem('token');
+};
+
+// Add a logout helper function
+export const handleLogout = (navigate) => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+
+  // 🔥 Dispatch custom event to notify Navigation component
+  window.dispatchEvent(new CustomEvent('auth-change'));
+  console.log('🚪 Logout successful - auth-change event dispatched');
+
+  if (navigate) {
+    navigate('/');
+  }
 };

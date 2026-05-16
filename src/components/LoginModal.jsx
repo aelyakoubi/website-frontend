@@ -1,3 +1,4 @@
+// src/components/LoginModal.jsx (simplified version without duplicate event)
 import {
   Box,
   Button,
@@ -17,6 +18,7 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -26,6 +28,7 @@ import { PasswordField } from '../FrontLogin/PasswordField';
 
 export const LoginModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -41,17 +44,27 @@ export const LoginModal = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     try {
-      // Roept de eigen backend aan via POST /login
-      // AuthUtils.handleLogin slaat token op in localStorage en navigeert
+      // handleLogin now dispatches the auth-change event internally
       await handleLogin(identifier, password, onClose, navigate);
+
+      toast({
+        title: 'Login Successful',
+        description: 'Welcome back! You are now logged in.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      setError('Inloggen mislukt. Controleer je gegevens en probeer opnieuw.');
+      setError(
+        err.message ||
+          'Inloggen mislukt. Controleer je gegevens en probeer opnieuw.'
+      );
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Verstuur formulier ook via Enter-toets
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleLoginClick();
   };
@@ -115,6 +128,7 @@ export const LoginModal = ({ isOpen, onClose }) => {
                     onClick={handleLoginClick}
                     isLoading={isLoading}
                     loadingText='Inloggen...'
+                    colorScheme='teal'
                   >
                     Log in
                   </Button>
@@ -125,7 +139,6 @@ export const LoginModal = ({ isOpen, onClose }) => {
                     </Text>
                     <Divider />
                   </HStack>
-                  {/* Auth0 OAuth knoppen (Google, GitHub, etc.) */}
                   <OAuthButtonGroup />
                 </Stack>
               </Stack>

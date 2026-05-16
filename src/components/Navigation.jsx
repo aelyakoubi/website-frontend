@@ -1,4 +1,4 @@
-// Navigation.jsx
+// src/components/Navigation.jsx
 import { useAuth0 } from '@auth0/auth0-react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import {
@@ -140,13 +140,16 @@ const NavLinks = ({ onMobileClick }) => {
   const [hasLocalToken, setHasLocalToken] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [userName, setUserName] = useState('');
+  const [authCheckCount, setAuthCheckCount] = useState(0);
 
   // Check token on mount and when storage changes
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
-      setHasLocalToken(!!token);
+      const hasToken = !!token;
+
+      setHasLocalToken(hasToken);
 
       if (userData) {
         try {
@@ -161,40 +164,65 @@ const NavLinks = ({ onMobileClick }) => {
 
       setIsCheckingAuth(false);
 
-      console.log('Auth state:', {
-        hasToken: !!token,
+      // Debug logging
+      console.log('🔍 Auth Check:', {
+        hasToken,
         auth0Authenticated: isAuth0Authenticated,
-        isLoggedIn: isAuth0Authenticated || !!token,
+        isLoggedIn: isAuth0Authenticated || hasToken,
+        userName: userName,
+        timestamp: new Date().toISOString(),
       });
+
+      setAuthCheckCount((prev) => prev + 1);
     };
 
     checkToken();
 
+    // Listen for storage changes (login/logout in other tabs)
     const handleStorage = () => {
+      console.log('📦 Storage event detected');
+      checkToken();
+      // Force re-render
+      window.dispatchEvent(new Event('forceUpdate'));
+    };
+
+    // Custom event for login/logout within the same tab
+    const handleAuthChange = () => {
+      console.log('🔄 Auth change event detected');
       checkToken();
     };
 
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('auth-change', handleAuthChange);
 
-    const handleAuthChange = () => {
+    // Force re-render when component mounts
+    const forceUpdate = () => {
       checkToken();
     };
-
-    window.addEventListener('auth-change', handleAuthChange);
+    window.addEventListener('forceUpdate', forceUpdate);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('auth-change', handleAuthChange);
+      window.removeEventListener('forceUpdate', forceUpdate);
     };
   }, [isAuth0Authenticated, user]);
 
+  // Determine if user is logged in
   const isLoggedIn = isAuth0Authenticated || hasLocalToken;
 
+  // Show loading state
   if (auth0Loading || isCheckingAuth) {
-    return null;
+    return (
+      <HStack spacing={6}>
+        <Text color='white'>Loading...</Text>
+      </HStack>
+    );
   }
 
   const handleLogout = () => {
+    console.log('🚪 Logging out user');
+
     // Remove JWT token
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -223,25 +251,9 @@ const NavLinks = ({ onMobileClick }) => {
     }
   };
 
-  const handleAccountClick = () => {
-    if (isLoggedIn) {
-      navigate('/useraccount');
-    } else {
-      // Show message that user needs to login
-      toast({
-        title: 'Login Required',
-        description: 'Please login to access your account settings.',
-        status: 'warning',
-        duration: 4000,
-        isClosable: true,
-      });
-
-      // Dispatch event to open login modal
-      window.dispatchEvent(new CustomEvent('open-login-modal'));
-    }
-  };
-
   const handleUpdateAccount = () => {
+    console.log('📝 Update account clicked, logged in:', isLoggedIn);
+
     if (isLoggedIn) {
       navigate('/useraccount');
     } else {
@@ -257,6 +269,8 @@ const NavLinks = ({ onMobileClick }) => {
   };
 
   const handleDeleteAccount = () => {
+    console.log('🗑️ Delete account clicked, logged in:', isLoggedIn);
+
     if (isLoggedIn) {
       navigate('/useraccount');
       // Scroll to delete section after navigation
@@ -283,6 +297,16 @@ const NavLinks = ({ onMobileClick }) => {
       onMobileClick();
     }
   };
+
+  // Debug current state
+  console.log(
+    '🎨 Rendering NavLinks - isLoggedIn:',
+    isLoggedIn,
+    'hasLocalToken:',
+    hasLocalToken,
+    'auth0:',
+    isAuth0Authenticated
+  );
 
   return (
     <>
@@ -337,6 +361,7 @@ const NavLinks = ({ onMobileClick }) => {
         <MenuList bg='gray.800' borderColor='gray.700'>
           {isLoggedIn ? (
             <>
+              {/* Update Account Option */}
               <MenuItem
                 icon={<FaUserEdit />}
                 bg='gray.800'
@@ -346,7 +371,10 @@ const NavLinks = ({ onMobileClick }) => {
               >
                 <Text>Update Account Details</Text>
               </MenuItem>
+
               <MenuDivider borderColor='gray.700' />
+
+              {/* Delete Account Option */}
               <MenuItem
                 icon={<FaTrashAlt />}
                 bg='gray.800'
@@ -356,7 +384,10 @@ const NavLinks = ({ onMobileClick }) => {
               >
                 <Text>Delete Account</Text>
               </MenuItem>
+
               <MenuDivider borderColor='gray.700' />
+
+              {/* Logout Option */}
               <MenuItem
                 onClick={handleLogout}
                 bg='gray.800'
@@ -368,18 +399,23 @@ const NavLinks = ({ onMobileClick }) => {
             </>
           ) : (
             <>
+              {/* Login Option */}
               <MenuItem
                 icon={<FaSignInAlt />}
                 bg='gray.800'
                 color='white'
                 _hover={{ bg: 'gray.700' }}
                 onClick={() => {
+                  console.log('🔐 Opening login modal');
                   window.dispatchEvent(new CustomEvent('open-login-modal'));
                 }}
               >
                 <Text>Login to Your Account</Text>
               </MenuItem>
+
               <MenuDivider borderColor='gray.700' />
+
+              {/* Sign Up Option */}
               <MenuItem
                 icon={<FaUserPlus />}
                 bg='gray.800'
