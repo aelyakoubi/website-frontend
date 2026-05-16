@@ -1,8 +1,9 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
+import eventsBackgroundImage from '../components/eventsBackgroundImage.png';
 import { Footer } from '../components/Footer';
 import Navigation from '../components/Navigation';
-import eventsBackgroundImage from '../components/eventsBackgroundImage.png';
+import LogoutTimer from './LogoutTimer';
 
 export const Root = () => {
   return (
