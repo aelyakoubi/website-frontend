@@ -11,11 +11,12 @@ import {
   Input,
   Text,
   VStack,
+  useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleSignUp } from '../FrontLogin/AuthUtils';
 import { OAuthButtonGroup } from '../FrontLogin/OAuthButtonGroup';
+import { PasswordField } from '../FrontLogin/PasswordField';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -27,11 +28,11 @@ const SignUpPage = () => {
   });
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,20 +45,47 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
     setIsLoading(true);
 
     const { name, email, username, password, imageFile } = formData;
 
     try {
-      // handleSignUp gooit nu een Error bij mislukking
-      // en navigeert zelf naar '/' bij succes
-      await handleSignUp(name, email, username, password, imageFile, navigate);
-      setSuccessMessage('Registratie gelukt! Je wordt doorgestuurd...');
-    } catch (error) {
-      setErrorMessage(
-        error.message || 'Registratie mislukt. Probeer het opnieuw.'
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', name);
+      formDataToSend.append('email', email);
+      formDataToSend.append('username', username);
+      formDataToSend.append('password', password);
+      if (imageFile) formDataToSend.append('image', imageFile);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/signup`,
+        { method: 'POST', body: formDataToSend }
       );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Sign-up failed. Please try again.');
+      }
+
+      // Store token and user if returned
+      if (data.token) localStorage.setItem('token', data.token);
+      if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Show success toast with message from backend
+      toast({
+        title: 'Account created!',
+        description: data.message || `Welcome ${username}! Check your email for a confirmation.`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
+
+      // Navigate after short delay so user sees the toast
+      setTimeout(() => navigate('/'), 2000);
+    } catch (error) {
+      setErrorMessage(error.message || 'An error occurred during sign-up. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -68,11 +96,6 @@ const SignUpPage = () => {
       {errorMessage && (
         <Text color='red.500' mb={4}>
           {errorMessage}
-        </Text>
-      )}
-      {successMessage && (
-        <Text color='green.500' mb={4}>
-          {successMessage}
         </Text>
       )}
 
@@ -113,24 +136,11 @@ const SignUpPage = () => {
 
           <FormControl id='password' isRequired>
             <FormLabel>Password</FormLabel>
-            <Input
-              type={showPassword ? 'text' : 'password'}
+            <PasswordField
               name='password'
-              fontWeight='bold'
               value={formData.password}
               onChange={handleInputChange}
             />
-            <Button
-              type='button'
-              onClick={() => setShowPassword(!showPassword)}
-              variant='link'
-              color='blue.500'
-              fontSize='sm'
-              mt={1}
-            >
-              {showPassword ? <ViewOffIcon mr={1} /> : <ViewIcon mr={1} />}
-              {showPassword ? 'Hide password' : 'Show password'}
-            </Button>
           </FormControl>
 
           <FormControl id='image'>
@@ -148,7 +158,7 @@ const SignUpPage = () => {
             colorScheme='blue'
             width='full'
             isLoading={isLoading}
-            loadingText='Bezig met registreren...'
+            loadingText='Creating account...'
           >
             Sign Up
           </Button>
