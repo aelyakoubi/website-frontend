@@ -4,7 +4,6 @@ import { ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LogoutTimer from './components/LogoutTimer'; // Ensure this path is correct
 import { Root } from './components/Root';
 import AboutUsPage from './pages/AboutUsPage';
 import CallbackPage from './pages/CallbackPage';
@@ -12,7 +11,7 @@ import ContactPage from './pages/ContactPage';
 import { EventPage } from './pages/EventPage';
 import { EventsPage } from './pages/EventsPage';
 import SignUpPage from './pages/SignUpPage';
-import UserAccountPage from './pages/UserAccountPage'; // Import the UserAccountPage component
+import UserAccountPage from './pages/UserAccountPage';
 
 const router = createBrowserRouter([
   {
@@ -24,15 +23,15 @@ const router = createBrowserRouter([
         element: <EventsPage />,
       },
       {
-        path: '/signup', // Adding the route for sign-up
-        element: <SignUpPage />, // Render SignUpPage component
+        path: '/signup',
+        element: <SignUpPage />,
       },
       {
-        path: '/contact', // Contact route
+        path: '/contact',
         element: <ContactPage />,
       },
       {
-        path: '/about', // About us route
+        path: '/about',
         element: <AboutUsPage />,
       },
       {
@@ -40,11 +39,11 @@ const router = createBrowserRouter([
         element: <EventPage />,
       },
       {
-        path: '/useraccount', // User account route
+        path: '/useraccount',
         element: <UserAccountPage />,
       },
       {
-        path: '/callback', // Auth0 callback route
+        path: '/callback',
         element: <CallbackPage />,
       },
     ],
@@ -61,7 +60,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       }}
     >
       <ChakraProvider>
-        <LogoutTimer />
         <RouterProvider router={router} />
       </ChakraProvider>
     </Auth0Provider>

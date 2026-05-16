@@ -16,11 +16,15 @@ export const Root = () => {
       bgRepeat='no-repeat'
       overflowX='hidden' // Prevent horizontal scrolling
     >
+      <LogoutTimer />{' '}
+      {/* ✅ Moved LogoutTimer here, so it is active on all pages */}
+      {/* This way, the LogoutTimer is active on all pages, not just the EventsPage */}
+      {/* It will listen for user activity and log out after 15 minutes of inactivity, regardless of which page the user is on */}
+      {/* This ensures a consistent and secure user experience across the entire application */}
       {/* Header */}
       <Box as='header' width='100%'>
         <Navigation />
       </Box>
-
       {/* Main Content */}
       <Box
         as='main'
@@ -38,7 +42,6 @@ export const Root = () => {
         {/* EventsPage.jsx renders here, Children of this route
         get injected here*/}
       </Box>
-
       {/* Footer */}
       <Box as='footer' width='100%'>
         <Footer />

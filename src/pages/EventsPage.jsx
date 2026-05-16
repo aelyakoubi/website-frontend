@@ -7,7 +7,6 @@ import { EventSearch } from '../components/EventSearch';
 import { Hero } from '../components/Hero';
 import { LoginModal } from '../components/LoginModal';
 import LogoutButton from '../components/LogoutButton';
-import LogoutTimer from '../components/LogoutTimer';
 import { isAuthenticated } from '../FrontLogin/AuthUtils';
 import { Logo } from '../FrontLogin/Logo';
 
@@ -110,7 +109,6 @@ export const EventsPage = () => {
         />
       )}
 
-      <LogoutTimer />
       <Heading as='h1' textAlign='center' mt='13' fontSize={30}>
         Discover and Explore Events Near You!
       </Heading>
