@@ -1,7 +1,4 @@
 // src/pages/SignUpPage.jsx
-//
-// AANGEPAST: OAuthButtonGroup toegevoegd zodat gebruikers zich ook kunnen
-// registreren via Google, GitHub of Microsoft.
 
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
@@ -17,8 +14,8 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OAuthButtonGroup } from '../FrontLogin/OAuthButtonGroup';
 import { handleSignUp } from '../FrontLogin/AuthUtils';
+import { OAuthButtonGroup } from '../FrontLogin/OAuthButtonGroup';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -32,55 +29,55 @@ const SignUpPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
-    setFormData({
-      ...formData,
-      imageFile: e.target.files[0],
-    });
+    setFormData({ ...formData, imageFile: e.target.files[0] });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+    setIsLoading(true);
 
     const { name, email, username, password, imageFile } = formData;
 
     try {
+      // handleSignUp gooit nu een Error bij mislukking
+      // en navigeert zelf naar '/' bij succes
       await handleSignUp(name, email, username, password, imageFile, navigate);
-      setSuccessMessage('Sign-up successful! Redirecting...');
-
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      setSuccessMessage('Registratie gelukt! Je wordt doorgestuurd...');
     } catch (error) {
-      console.error('Sign-up error:', error);
       setErrorMessage(
-        error.response?.data?.message || 'Sign-up failed. Please try again.'
+        error.message || 'Registratie mislukt. Probeer het opnieuw.'
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Box maxW='md' mx='auto' mt={10} px={4}>
-      {/* Foutmelding */}
-      {errorMessage && <Text color='red.500' mb={4}>{errorMessage}</Text>}
-      {/* Succesmelding */}
-      {successMessage && <Text color='green.500' mb={4}>{successMessage}</Text>}
+      {errorMessage && (
+        <Text color='red.500' mb={4}>
+          {errorMessage}
+        </Text>
+      )}
+      {successMessage && (
+        <Text color='green.500' mb={4}>
+          {successMessage}
+        </Text>
+      )}
 
       <form onSubmit={handleSubmit}>
         <VStack spacing={4}>
-          {/* Naam */}
           <FormControl id='name' isRequired>
             <FormLabel>Name</FormLabel>
             <Input
@@ -92,7 +89,6 @@ const SignUpPage = () => {
             />
           </FormControl>
 
-          {/* Email */}
           <FormControl id='email' isRequired>
             <FormLabel>Email</FormLabel>
             <Input
@@ -104,7 +100,6 @@ const SignUpPage = () => {
             />
           </FormControl>
 
-          {/* Gebruikersnaam */}
           <FormControl id='username' isRequired>
             <FormLabel>Username</FormLabel>
             <Input
@@ -116,7 +111,6 @@ const SignUpPage = () => {
             />
           </FormControl>
 
-          {/* Wachtwoord */}
           <FormControl id='password' isRequired>
             <FormLabel>Password</FormLabel>
             <Input
@@ -139,7 +133,6 @@ const SignUpPage = () => {
             </Button>
           </FormControl>
 
-          {/* Afbeelding uploaden */}
           <FormControl id='image'>
             <FormLabel>Upload Image</FormLabel>
             <Input
@@ -150,12 +143,16 @@ const SignUpPage = () => {
             />
           </FormControl>
 
-          {/* Registreren knop */}
-          <Button type='submit' colorScheme='blue' width='full'>
+          <Button
+            type='submit'
+            colorScheme='blue'
+            width='full'
+            isLoading={isLoading}
+            loadingText='Bezig met registreren...'
+          >
             Sign Up
           </Button>
 
-          {/* Scheidingslijn */}
           <HStack width='full'>
             <Divider />
             <Text fontSize='sm' whiteSpace='nowrap' color='gray.500'>
@@ -164,7 +161,6 @@ const SignUpPage = () => {
             <Divider />
           </HStack>
 
-          {/* OAuth knoppen — Google, GitHub, Microsoft */}
           <OAuthButtonGroup />
         </VStack>
       </form>
