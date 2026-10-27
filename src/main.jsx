@@ -13,42 +13,53 @@ import { EventsPage } from './pages/EventsPage';
 import SignUpPage from './pages/SignUpPage';
 import UserAccountPage from './pages/UserAccountPage';
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Root />,
+      children: [
+        {
+          path: '/',
+          element: <EventsPage />,
+        },
+        {
+          path: '/signup',
+          element: <SignUpPage />,
+        },
+        {
+          path: '/contact',
+          element: <ContactPage />,
+        },
+        {
+          path: '/about',
+          element: <AboutUsPage />,
+        },
+        {
+          path: '/event/:eventId',
+          element: <EventPage />,
+        },
+        {
+          path: '/useraccount',
+          element: <UserAccountPage />,
+        },
+        {
+          path: '/callback',
+          element: <CallbackPage />,
+        },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: <Root />,
-    children: [
-      {
-        path: '/',
-        element: <EventsPage />,
-      },
-      {
-        path: '/signup',
-        element: <SignUpPage />,
-      },
-      {
-        path: '/contact',
-        element: <ContactPage />,
-      },
-      {
-        path: '/about',
-        element: <AboutUsPage />,
-      },
-      {
-        path: '/event/:eventId',
-        element: <EventPage />,
-      },
-      {
-        path: '/useraccount',
-        element: <UserAccountPage />,
-      },
-      {
-        path: '/callback',
-        element: <CallbackPage />,
-      },
-    ],
-  },
-]);
+    future: {
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  }
+);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -60,7 +71,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       }}
     >
       <ChakraProvider>
-        <RouterProvider router={router} />
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
       </ChakraProvider>
     </Auth0Provider>
   </React.StrictMode>
