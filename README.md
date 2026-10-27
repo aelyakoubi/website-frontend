@@ -188,7 +188,7 @@ Auth0 is used as the identity provider, while authorization and protected routes
 
 # 🧪 Testing Notes
 
-* `.env` files are normally excluded from the repository for security reasons.
+* `.env` files are excluded from the repository for security reasons.
 * For this specific demonstration project, `.env` files are included/configured as an exception so employers, recruiters, and clients can properly review, test, and run the fullstack application.
 * In a real production environment, sensitive credentials, API keys, database URLs, and tokens would never be publicly accessible or exposed.
 * Test suites are currently being updated.
