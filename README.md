@@ -2,7 +2,7 @@
 
 ## 🌐 Live Demo
 
-**Last Updated:** 14-05-2026
+**Last Updated:** 27-10-2026
 
 [Visit the Application](https://ivory-dugong-883765.hostingersite.com)
 
